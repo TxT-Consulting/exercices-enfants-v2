@@ -614,8 +614,11 @@ function setBackBtn(show) {
 }
 
 function goBack() {
-  if (STATE.timerInterval) { clearInterval(STATE.timerInterval); STATE.timerInterval = null; }
-  if (STATE.screen === 'exercise' || STATE.screen === 'scorecard') {
+  if (STATE.screen === 'exercise') {
+    // Abandon la session en cours — la progression déjà gagnée est sauvée
+    if (STATE.timerInterval) { clearInterval(STATE.timerInterval); STATE.timerInterval = null; }
+    renderLevelSelect(STATE.category);
+  } else if (STATE.screen === 'scorecard') {
     renderLevelSelect(STATE.category);
   } else if (STATE.screen === 'levelselect') {
     renderHome();
@@ -625,7 +628,7 @@ function goBack() {
 function renderHome() {
   STATE.screen = 'home';
   setBackBtn(false);
-  const hasSavedProgress = loadState();
+  const hasSavedProgress = STATE.xp > 0 || Object.values(STATE.levelAttempts).some(cat => Object.values(cat).some(v => v > 0));
   const app = document.getElementById('app');
 
   let continueCard = '';
@@ -676,7 +679,8 @@ function getCatDesc(cat) {
 }
 
 function continueLast() {
-  renderLevelSelect('maths');
+  // Go to home — user picks their own category
+  renderHome();
 }
 
 function renderLevelSelect(cat) {
