@@ -853,7 +853,8 @@ function checkBlank() {
   if (!input) return;
   if (STATE.timerInterval) { clearInterval(STATE.timerInterval); STATE.timerInterval = null; }
   const val = input.value.trim().toLowerCase();
-  const accepted = (ex.answer || []).map(a => a.toLowerCase());
+  const raw = ex.answer;
+  const accepted = (Array.isArray(raw) ? raw : [raw]).map(a => String(a).toLowerCase());
   input.disabled = true;
   document.querySelector('.submit-btn')?.setAttribute('disabled', true);
   if (accepted.includes(val)) {
