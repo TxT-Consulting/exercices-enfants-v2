@@ -778,7 +778,7 @@ function renderExBody(ex, cat) {
   switch (ex.type) {
     case 'qcm':
       return `<div class="qcm-options">
-        ${ex.opts.map(o => `<button class="qcm-btn" onclick="checkQCM(this, '${o.replace(/'/g,"\\'")}', '${ex.correct.replace(/'/g,"\\'")}', '${(ex.expl||'').replace(/'/g,"\\'")}')">${o}</button>`).join('')}
+        ${ex.opts.map((o, i) => `<button class="qcm-btn" data-option="${i}" onclick="checkQCM(this)">${o}</button>`).join('')}
       </div>`;
     case 'vf':
       return `<div class="vf-options">
@@ -822,7 +822,12 @@ function renderAssoc(ex) {
 }
 
 // ─── CHECKING ──────────────────────────────────────────────────────────────────
-function checkQCM(btn, chosen, correct, expl) {
+function checkQCM(btn) {
+  const ex = STATE.exercises[STATE.exIndex];
+  const optionIdx = parseInt(btn.dataset.option);
+  const chosen = ex.opts[optionIdx];
+  const correct = ex.correct;
+  const expl = ex.expl || '';
   document.querySelectorAll('.qcm-btn').forEach(b => b.disabled = true);
   if (chosen === correct) {
     btn.classList.add('correct');
