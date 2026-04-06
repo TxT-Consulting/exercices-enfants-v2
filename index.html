@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apprendre en s'amusant 🌟 — V2</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --maths: #6C63FF;
+    --maths-light: #EEF0FF;
+    --francais: #FF6B9D;
+    --francais-light: #FFF0F6;
+    --logique: #00C9A7;
+    --logique-light: #E8FFF9;
+    --gold: #FFD700;
+    --bg: #F7F8FC;
+    --card: #FFFFFF;
+    --text: #2D3748;
+    --text-muted: #718096;
+    --correct: #38A169;
+    --wrong: #E53E3E;
+    --radius: 18px;
+    --shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  #xp-bar-wrap {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: 8px; background: #e2e8f0; z-index: 100;
+  }
+  #xp-bar {
+    height: 100%; background: linear-gradient(90deg, #6C63FF, #FF6B9D);
+    transition: width 0.5s ease; border-radius: 0 4px 4px 0;
+  }
+
+  #top-bar {
+    position: fixed; top: 8px; left: 0; right: 0;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 24px; background: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06); z-index: 99;
+  }
+  #logo { font-size: 1.2rem; font-weight: 900; color: var(--maths); }
+  .top-right { display: flex; gap: 12px; align-items: center; }
+  #xp-display { font-weight: 800; font-size: 1rem; background: linear-gradient(135deg, #6C63FF, #FF6B9D); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .settings-btn { background: none; border: none; font-size: 1.3rem; cursor: pointer; opacity: 0.6; transition: opacity 0.2s; }
+  .settings-btn:hover { opacity: 1; }
+
+  #app {
+    padding: 80px 20px 40px;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .home-title { text-align: center; font-size: 2rem; font-weight: 900; margin-bottom: 8px; }
+  .home-sub { text-align: center; color: var(--text-muted); font-size: 1rem; margin-bottom: 32px; }
+
+  .continue-card {
+    background: linear-gradient(135deg, #6C63FF, #8B83FF);
+    color: white; border-radius: var(--radius);
+    padding: 24px; margin-bottom: 16px;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .continue-card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(108,99,255,0.4); }
+  .continue-title { font-weight: 900; font-size: 1.1rem; margin-bottom: 4px; }
+  .continue-sub { font-size: 0.9rem; opacity: 0.9; }
+
+  .category-card {
+    background: var(--card); border-radius: var(--radius);
+    padding: 24px; margin-bottom: 16px;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex; align-items: center; gap: 20px;
+    border: 2px solid transparent;
+  }
+  .category-card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.12); }
+  .category-card.maths { border-color: var(--maths); }
+  .category-card.francais { border-color: var(--francais); }
+  .category-card.logique { border-color: var(--logique); }
+  .cat-icon { font-size: 2.8rem; }
+  .cat-info { flex: 1; }
+  .cat-name { font-size: 1.3rem; font-weight: 800; margin-bottom: 4px; }
+  .cat-desc { font-size: 0.9rem; color: var(--text-muted); }
+  .cat-levels { display: flex; gap: 8px; margin-top: 10px; }
+  .level-badge {
+    padding: 4px 12px; border-radius: 20px;
+    font-size: 0.8rem; font-weight: 700;
+    border: 2px solid;
+  }
+  .level-badge.unlocked { opacity: 1; }
+  .level-badge.locked { opacity: 0.4; }
+  .maths .level-badge { color: var(--maths); border-color: var(--maths); background: var(--maths-light); }
+  .francais .level-badge { color: var(--francais); border-color: var(--francais); background: var(--francais-light); }
+  .logique .level-badge { color: var(--logique); border-color: var(--logique); background: var(--logique-light); }
+
+  .level-select-title { font-size: 1.6rem; font-weight: 900; margin-bottom: 8px; }
+  .level-select-sub { color: var(--text-muted); margin-bottom: 28px; }
+  .level-card {
+    background: var(--card); border-radius: var(--radius);
+    padding: 22px 24px; margin-bottom: 14px;
+    box-shadow: var(--shadow);
+    display: flex; align-items: center; gap: 16px;
+    border: 2px solid transparent;
+  }
+  .level-card.unlocked { cursor: pointer; transition: transform 0.2s; }
+  .level-card.unlocked:hover { transform: translateY(-2px); }
+  .level-card.locked-card { opacity: 0.5; }
+  .level-icon { font-size: 2rem; }
+  .level-info { flex: 1; }
+  .level-name { font-size: 1.2rem; font-weight: 800; }
+  .level-score { font-size: 0.9rem; color: var(--text-muted); margin-top: 2px; }
+  .lock-icon { font-size: 1.4rem; }
+
+  .ex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .ex-progress-text { font-size: 0.9rem; color: var(--text-muted); font-weight: 700; }
+  .progress-bar-wrap { height: 8px; background: #e2e8f0; border-radius: 4px; margin-bottom: 24px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; border-radius: 4px; transition: width 0.4s ease; }
+  .maths-bar { background: var(--maths); }
+  .francais-bar { background: var(--francais); }
+  .logique-bar { background: var(--logique); }
+
+  .ex-card {
+    background: var(--card); border-radius: var(--radius);
+    padding: 28px; box-shadow: var(--shadow);
+    margin-bottom: 16px;
+  }
+  .ex-type-badge {
+    display: inline-block; padding: 4px 14px; border-radius: 20px;
+    font-size: 0.8rem; font-weight: 700;
+    margin-bottom: 16px;
+  }
+  .ex-question { font-size: 1.3rem; font-weight: 800; line-height: 1.4; margin-bottom: 24px; }
+
+  .qcm-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .qcm-btn {
+    padding: 16px; border-radius: 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.1rem; font-weight: 700;
+    border: 2px solid #E2E8F0;
+    background: white; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .qcm-btn:hover:not(:disabled) { border-color: currentColor; transform: scale(1.02); }
+  .qcm-btn.correct { background: #F0FFF4; border-color: var(--correct); color: var(--correct); }
+  .qcm-btn.wrong { background: #FFF5F5; border-color: var(--wrong); color: var(--wrong); animation: shake 0.4s; }
+
+  .vf-options { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .vf-btn {
+    padding: 24px; border-radius: 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.3rem; font-weight: 900;
+    border: none; cursor: pointer;
+    transition: all 0.15s; text-align: center;
+  }
+  .vf-vrai { background: #EBF8FF; color: #2B6CB0; }
+  .vf-faux { background: #FFF5F5; color: #C53030; }
+  .vf-btn:hover:not(:disabled) { transform: scale(1.03); filter: brightness(0.95); }
+  .vf-btn.correct { outline: 4px solid var(--correct); }
+  .vf-btn.wrong { outline: 4px solid var(--wrong); animation: shake 0.4s; }
+
+  .blank-wrap { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .blank-input {
+    padding: 12px 16px; border-radius: 12px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.1rem; font-weight: 700;
+    border: 2px solid #CBD5E0;
+    outline: none; flex: 1; min-width: 160px;
+    transition: border-color 0.2s;
+  }
+  .blank-input:focus { border-color: var(--maths); }
+  .blank-input.correct { border-color: var(--correct); background: #F0FFF4; }
+  .blank-input.wrong { border-color: var(--wrong); background: #FFF5F5; animation: shake 0.4s; }
+  .submit-btn {
+    padding: 12px 24px; border-radius: 12px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem; font-weight: 800;
+    border: none; cursor: pointer;
+    background: var(--maths); color: white;
+    transition: all 0.15s;
+  }
+  .submit-btn:hover { filter: brightness(1.1); }
+
+  .timer-bar-wrap { height: 10px; background: #e2e8f0; border-radius: 5px; margin-bottom: 20px; overflow: hidden; }
+  .timer-bar { height: 100%; border-radius: 5px; transition: width 0.1s linear, background 0.3s; background: var(--correct); }
+
+  .assoc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .assoc-col { display: flex; flex-direction: column; gap: 10px; }
+  .assoc-item {
+    padding: 14px 18px; border-radius: 12px;
+    font-weight: 700; font-size: 1rem;
+    border: 2px solid #CBD5E0;
+    cursor: pointer; background: white;
+    transition: all 0.15s; text-align: center;
+  }
+  .assoc-item.selected { border-color: var(--maths); background: var(--maths-light); }
+  .assoc-item.matched { border-color: var(--correct); background: #F0FFF4; cursor: default; }
+
+  .feedback-panel {
+    border-radius: 14px; padding: 18px 20px;
+    margin-top: 16px; font-size: 1rem; font-weight: 600;
+    display: none; animation: fadeIn 0.3s ease;
+  }
+  .feedback-panel.correct { background: #F0FFF4; color: #276749; border: 2px solid #9AE6B4; }
+  .feedback-panel.wrong { background: #FFF5F5; color: #9B2C2C; border: 2px solid #FEB2B2; }
+
+  .streak-banner {
+    position: fixed; top: 60px; left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #F59E0B, #FF6B9D);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-weight: 900;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 20px rgba(245,158,11,0.4);
+    animation: slideDown 0.3s ease;
+    z-index: 98;
+  }
+  @keyframes slideDown {
+    from { transform: translateX(-50%) translateY(-30px); opacity: 0; }
+    to { transform: translateX(-50%) translateY(0); opacity: 1; }
+  }
+
+  .next-btn {
+    width: 100%; padding: 18px; border-radius: var(--radius);
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.1rem; font-weight: 900;
+    border: none; cursor: pointer; margin-top: 16px;
+    background: linear-gradient(135deg, #6C63FF, #8B83FF);
+    color: white;
+    transition: all 0.15s; display: none;
+  }
+  .next-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(108,99,255,0.4); }
+
+  .score-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 36px 28px;
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+  .score-emoji { font-size: 4rem; margin-bottom: 12px; }
+  .score-title { font-size: 1.8rem; font-weight: 900; margin-bottom: 8px; }
+  .score-sub { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 24px; }
+  .score-stars { font-size: 2.5rem; margin-bottom: 24px; }
+  .score-actions { display: flex; gap: 12px; flex-direction: column; }
+  .score-btn {
+    padding: 16px; border-radius: 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.1rem; font-weight: 800;
+    border: none; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .score-btn.primary { background: linear-gradient(135deg, #6C63FF, #8B83FF); color: white; }
+  .score-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(108,99,255,0.4); }
+  .score-btn.secondary { background: #EDF2F7; color: var(--text); }
+  .score-btn.secondary:hover { background: #E2E8F0; }
+
+  .confetti-piece {
+    position: fixed; width: 10px; height: 10px;
+    border-radius: 2px;
+    pointer-events: none; z-index: 999;
+    animation: confettiFall 1.5s ease-in forwards;
+  }
+
+  @keyframes confettiFall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-6px); }
+    80% { transform: translateX(6px); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes popIn {
+    0% { transform: scale(0.8); opacity: 0; }
+    70% { transform: scale(1.05); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .pop-in { animation: popIn 0.35s ease; }
+
+  @media (max-width: 480px) {
+    .qcm-options { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div id="xp-bar-wrap"><div id="xp-bar"></div></div>
+
+<div id="top-bar">
+  <div id="logo">✨ Apprends !</div>
+  <div class="top-right">
+    <div id="xp-display">⭐ 0 XP</div>
+    <button class="settings-btn" title="Paramètres" onclick="toggleSettings()">⚙️</button>
+  </div>
+</div>
+
+<div id="app"></div>
+
+<script>
+// ─── STORAGE HELPERS ────────────────────────────────────────────────────────
+const STORAGE = {
+  get: (key, def) => { try { return JSON.parse(localStorage.getItem(key)) || def; } catch { return def; } },
+  set: (key, val) => localStorage.setItem(key, JSON.stringify(val)),
+  remove: (key) => localStorage.removeItem(key),
+};
+
+// ─── DATA ────────────────────────────────────────────────────────────────────
+const BRAVO = ['Bravo ! 🎉', 'Excellent ! 🌟', 'Tu es fort(e) ! 💪', 'Super ! ✨', 'Parfait ! 🏆', 'Génial ! 🚀', 'Incroyable ! 🎊', 'Ouiiiii ! 🎯'];
+const CONFETTI_COLORS = ['#6C63FF','#FF6B9D','#00C9A7','#FFD700','#FF8C42','#A8E6CF'];
+
+const EXERCISES = {
+  maths: {
+    label: 'Mathématiques',
+    icon: '🔢',
+    color: '#6C63FF',
+    levels: {
+      facile: [
+        { type: 'qcm', q: 'Combien font 3 + 4 ?', opts: ['5', '6', '7', '8'], correct: '7', expl: '3 + 4 = 7. Compte sur tes doigts : 3 puis 4 de plus, tu arrives à 7 !' },
+        { type: 'qcm', q: 'Combien font 10 - 3 ?', opts: ['5', '6', '7', '8'], correct: '7', expl: '10 - 3 = 7. Si tu pars de 10 et tu enlèves 3, il reste 7.' },
+        { type: 'vf', q: '5 est plus grand que 3.', correct: true, expl: 'C\'est vrai ! 5 > 3. Sur la droite des nombres, 5 est après 3.' },
+        { type: 'vf', q: '8 est plus petit que 6.', correct: false, expl: 'Faux ! 8 est plus grand que 6. On écrit 8 > 6.' },
+        { type: 'blank', q: 'Quel nombre manque ? 2, 4, 6, ___, 10', answer: ['8'], expl: 'On ajoute 2 à chaque fois : 6 + 2 = 8.' },
+        { type: 'rapide', q: '6 + 7 = ?', answer: '13', expl: '6 + 7 = 13. Astuce : 6 + 4 = 10, plus 3 = 13.' },
+        { type: 'qcm', q: 'Combien de côtés a un triangle ?', opts: ['2', '3', '4', '5'], correct: '3', expl: 'Un triangle a 3 côtés. Son nom vient de "tri" (trois) et "angle".' },
+        { type: 'qcm', q: 'Combien font 12 - 5 ?', opts: ['6', '7', '8', '9'], correct: '7', expl: '12 - 5 = 7. Tu peux compter en remontant : 5, 6, 7... jusqu\'à 12.' },
+        { type: 'vf', q: '2 × 4 = 8', correct: true, expl: 'Oui ! 2 × 4 = 8. C\'est 4 + 4 = 8, ou 2 + 2 + 2 + 2 = 8.' },
+      ],
+      moyen: [
+        { type: 'qcm', q: 'Combien font 24 + 15 ?', opts: ['37', '38', '39', '40'], correct: '39', expl: '24 + 15 = 39. On additionne les unités : 4+5=9, puis les dizaines : 20+10=30. Total : 39.' },
+        { type: 'qcm', q: 'Combien font 50 - 17 ?', opts: ['31', '32', '33', '34'], correct: '33', expl: '50 - 17 = 33. On peut faire 50 - 10 = 40, puis 40 - 7 = 33.' },
+        { type: 'blank', q: '5 × 3 = ___', answer: ['15'], expl: '5 × 3 = 15. C\'est comme compter 5 trois fois : 5 + 5 + 5 = 15.' },
+        { type: 'vf', q: '4 × 5 = 20', correct: true, expl: 'Oui ! 4 × 5 = 20. On peut compter par 5 : 5, 10, 15, 20 (4 fois).' },
+        { type: 'qcm', q: 'Quel nombre manque ? 10, 20, ___, 40', opts: ['25', '28', '30', '35'], correct: '30', expl: 'On ajoute 10 à chaque fois : 20 + 10 = 30.' },
+        { type: 'rapide', q: '8 × 3 = ?', answer: '24', expl: '8 × 3 = 24. Compte par 8 : 8, 16, 24.' },
+        { type: 'qcm', q: 'Combien font 36 ÷ 6 ?', opts: ['4', '5', '6', '7'], correct: '6', expl: '36 ÷ 6 = 6. C\'est l\'inverse : 6 × 6 = 36, donc 36 ÷ 6 = 6.' },
+        { type: 'rapide', q: '45 + 28 = ?', answer: '73', expl: '45 + 28 = 73. 45 + 20 = 65, puis 65 + 8 = 73.' },
+        { type: 'vf', q: '7 × 8 = 54', correct: false, expl: 'Non ! 7 × 8 = 56, pas 54. Tu peux vérifier : 8 + 8 + 8 + 8 + 8 + 8 + 8 = 56.' },
+      ],
+      difficile: [
+        { type: 'qcm', q: '37 + 48 = ?', opts: ['83', '84', '85', '86'], correct: '85', expl: '37 + 48 : d\'abord 37 + 40 = 77, puis 77 + 8 = 85.' },
+        { type: 'blank', q: 'Tu as 24 billes. Tu en gagnes 13 puis tu en perds 8. Combien en as-tu ?', answer: ['29'], expl: '24 + 13 = 37, puis 37 - 8 = 29 billes.' },
+        { type: 'qcm', q: '7 × 6 = ?', opts: ['40', '41', '42', '43'], correct: '42', expl: '7 × 6 = 42. La table de 7 : 7, 14, 21, 28, 35, 42.' },
+        { type: 'vf', q: '100 - 37 = 63', correct: true, expl: 'Oui ! 100 - 37 = 63. On peut vérifier : 63 + 37 = 100.' },
+        { type: 'blank', q: 'La moitié de 36 est ___', answer: ['18'], expl: '36 ÷ 2 = 18. La moitié, c\'est partager en deux parties égales.' },
+        { type: 'rapide', q: '9 × 7 = ?', answer: '63', expl: '9 × 7 = 63. Astuce : 10 × 7 = 70, donc 9 × 7 = 70 - 7 = 63.' },
+        { type: 'qcm', q: 'Combien font 123 - 45 ?', opts: ['76', '77', '78', '79'], correct: '78', expl: '123 - 45 = 78. 123 - 40 = 83, puis 83 - 5 = 78.' },
+        { type: 'rapide', q: '9 × 9 = ?', answer: '81', expl: '9 × 9 = 81. Astuce : 9 × 10 = 90, donc 9 × 9 = 90 - 9 = 81.' },
+        { type: 'vf', q: '100 ÷ 4 = 24', correct: false, expl: 'Non ! 100 ÷ 4 = 25. Tu peux vérifier : 25 × 4 = 100.' },
+      ],
+    }
+  },
+  francais: {
+    label: 'Français',
+    icon: '📖',
+    color: '#FF6B9D',
+    levels: {
+      facile: [
+        { type: 'qcm', q: 'Comment s\'écrit l\'animal qui miaule ?', opts: ['sha', 'chat', 'cha', 'chats'], correct: 'chat', expl: 'On écrit "chat" avec CH et un T muet à la fin.' },
+        { type: 'vf', q: 'On écrit : "les chien" au pluriel.', correct: false, expl: 'Faux ! Au pluriel on ajoute un S : "les chiens".' },
+        { type: 'qcm', q: 'Quel mot veut dire le contraire de "grand" ?', opts: ['fort', 'petit', 'gros', 'lent'], correct: 'petit', expl: '"Petit" est le contraire de "grand". C\'est son antonyme.' },
+        { type: 'vf', q: 'Une pomme est un légume.', correct: false, expl: 'Faux ! La pomme est un fruit. Les légumes poussent souvent dans la terre (carotte, poireau...).' },
+        { type: 'qcm', q: 'Quel est l\'intrus ? chien — chat — table — lapin', opts: ['chien', 'chat', 'table', 'lapin'], correct: 'table', expl: '"Table" est l\'intrus car c\'est un meuble, pas un animal comme les autres.' },
+        { type: 'blank', q: 'Le soleil brille dans le ___', answer: ['ciel'], expl: 'Le soleil brille dans le "ciel". C\'est le mot le plus naturel ici.' },
+        { type: 'qcm', q: 'Le contraire de "nuit" est ___', opts: ['jour', 'soir', 'matin', 'midi'], correct: 'jour', expl: '"Jour" est le contraire de "nuit". Jour et nuit alternent.' },
+        { type: 'vf', q: 'On écrit les chevaux au pluriel.', correct: true, expl: 'Oui ! "Cheval" prend un X au pluriel : chevaux. C\'est une règle spéciale.' },
+        { type: 'blank', q: 'Il fait ___ dehors.', answer: ['froid', 'chaud'], expl: 'Tu peux répondre "froid" ou "chaud" selon le temps !' },
+      ],
+      moyen: [
+        { type: 'qcm', q: 'Quelle est la bonne orthographe ?', opts: ['beaucoup', 'beaucoups', 'baucoup', 'beaucoupt'], correct: 'beaucoup', expl: '"Beaucoup" s\'écrit sans S et sans T. C\'est un mot invariable.' },
+        { type: 'vf', q: 'On écrit : "les oiseaux chantent"', correct: true, expl: 'Oui ! "Oiseaux" prend un X au pluriel (pas un S). Et "chantent" prend -ent avec "ils".' },
+        { type: 'qcm', q: 'Quel mot signifie "très content" ?', opts: ['triste', 'fatigué', 'joyeux', 'effrayé'], correct: 'joyeux', expl: '"Joyeux" signifie être très content, heureux.' },
+        { type: 'blank', q: 'Les ___ fleurissent au printemps.', answer: ['fleurs'], expl: 'Les "fleurs" fleurissent au printemps. "Fleurir" vient du mot "fleur".' },
+        { type: 'qcm', q: 'Quel est l\'intrus ? rouge — bleu — chaise — vert', opts: ['rouge', 'bleu', 'chaise', 'vert'], correct: 'chaise', expl: '"Chaise" est l\'intrus car c\'est un meuble. Rouge, bleu et vert sont des couleurs.' },
+        { type: 'vf', q: 'On dit "je suis allé" (pas "je suis allée" pour un garçon).', correct: true, expl: 'Oui ! Un garçon écrit "allé" sans E. Une fille écrit "allée" avec un E.' },
+        { type: 'qcm', q: 'Synonyme de "rapide"', opts: ['lent', 'vite', 'fort', 'grand'], correct: 'vite', expl: '"Vite" et "rapide" veulent dire la même chose. Ce sont des synonymes.' },
+        { type: 'vf', q: 'On écrit "on a mangé" avec avoir.', correct: true, expl: 'Oui ! "Manger" se conjugue avec "avoir" : on a mangé, nous avons mangé...' },
+        { type: 'blank', q: 'Les ___ (œil) voient tout.', answer: ['yeux'], expl: '"Œil" au pluriel devient "yeux". C\'est une exception spéciale.' },
+      ],
+      difficile: [
+        { type: 'blank', q: 'Les ___ (cheval) galopent dans la prairie.', answer: ['chevaux'], expl: '"Cheval" devient "chevaux" au pluriel. Plusieurs mots en -al font -aux au pluriel (animal → animaux).' },
+        { type: 'qcm', q: 'Quelle phrase est correcte ?', opts: ['les filles jouent', 'les filles joue', 'les fille jouent', 'le filles jouent'], correct: 'les filles jouent', expl: '"Les filles" = pluriel féminin → "filles" avec S. Et "jouent" avec -ent car ce sont "elles".' },
+        { type: 'vf', q: 'On écrit : "il sont partis"', correct: false, expl: 'Faux ! Avec "il" (singulier) on dit "il est parti". "Ils sont partis" serait correct au pluriel.' },
+        { type: 'qcm', q: 'Intrus : courir — sauter — danser — livre', opts: ['courir', 'sauter', 'danser', 'livre'], correct: 'livre', expl: '"Livre" est l\'intrus. Courir, sauter, danser sont des verbes (des actions). Livre est un nom (un objet).' },
+        { type: 'blank', q: 'Je ___ allé à l\'école ce matin.', answer: ['suis'], expl: '"Je suis allé" : le verbe aller se conjugue avec "être" : je suis, tu es, il est allé...' },
+        { type: 'vf', q: 'On écrit "nous avons mangé"', correct: true, expl: 'Oui ! C\'est correct. "Manger" avec "nous" donne "nous avons mangé".' },
+        { type: 'qcm', q: 'Il ___ (falloir) travailler.', opts: ['falls', 'faut', 'faux', 'falt'], correct: 'faut', expl: '"Falloir" → "il faut". C\'est un verbe très spécial, on ne l\'utilise qu\'à la 3e personne.' },
+        { type: 'blank', q: 'Elle ___ (aller) au marché demain.', answer: ['va'], expl: '"Aller" au présent avec "elle" → "elle va".' },
+        { type: 'vf', q: 'On dit "vous êtes allés" (pluriel).', correct: true, expl: 'Oui ! "Aller" avec "vous" → "vous êtes allés" ou "vous êtes allées".' },
+      ],
+    }
+  },
+  logique: {
+    label: 'Logique',
+    icon: '🧩',
+    color: '#00C9A7',
+    levels: {
+      facile: [
+        { type: 'qcm', q: 'Quel est l\'intrus ? pomme — poire — banane — voiture', opts: ['pomme', 'poire', 'banane', 'voiture'], correct: 'voiture', expl: '"Voiture" est l\'intrus : les autres sont des fruits. Une voiture est un véhicule.' },
+        { type: 'qcm', q: 'Quelle suite logique ? 1, 2, 3, ___, 5', opts: ['3', '4', '5', '6'], correct: '4', expl: 'On ajoute 1 à chaque fois : 3 + 1 = 4.' },
+        { type: 'vf', q: 'Un oiseau peut voler.', correct: true, expl: 'Vrai ! La plupart des oiseaux volent grâce à leurs ailes et leurs plumes légères.' },
+        { type: 'assoc', q: 'Associe chaque animal à son cri !', pairs: [['chien', 'aboie'], ['chat', 'miaule'], ['vache', 'meugle'], ['grenouille', 'coasse']], expl: 'Chaque animal a son propre cri !' },
+        { type: 'blank', q: 'Le contraire de "chaud" est ___.', answer: ['froid'], expl: '"Froid" est le contraire de "chaud". Ce sont des antonymes.' },
+        { type: 'qcm', q: 'La suite : ⭕🔶⭕🔶___ Quelle forme vient ensuite ?', opts: ['⭕', '🔶', '🔷', '⬛'], correct: '⭕', expl: 'La suite alterne cercle et losange. Après 🔶, vient ⭕.' },
+        { type: 'qcm', q: 'Intrus : guitare — piano — chaise — violon', opts: ['guitare', 'piano', 'chaise', 'violon'], correct: 'chaise', expl: '"Chaise" est l\'intrus. Guitare, piano et violon sont des instruments de musique.' },
+        { type: 'vf', q: '3 est un nombre pair.', correct: false, expl: 'Faux ! 3 est un nombre impair. Les nombres pairs sont 2, 4, 6, 8...' },
+        { type: 'blank', q: 'Le double de 6 est ___', answer: ['12'], expl: 'Le double, c\'est multiplier par 2 : 6 × 2 = 12.' },
+      ],
+      moyen: [
+        { type: 'qcm', q: 'Intrus : Paris — Lyon — Berlin — Marseille', opts: ['Paris', 'Lyon', 'Berlin', 'Marseille'], correct: 'Berlin', expl: 'Berlin est une ville allemande. Les autres (Paris, Lyon, Marseille) sont toutes des villes françaises.' },
+        { type: 'blank', q: 'Si tu as 3 groupes de 4 élèves, il y a ___ élèves en tout.', answer: ['12'], expl: '3 groupes de 4 : 4 + 4 + 4 = 12. Ou 3 × 4 = 12.' },
+        { type: 'qcm', q: 'Quelle suite ? 100, 90, 80, ___, 60', opts: ['65', '70', '75', '68'], correct: '70', expl: 'On enlève 10 à chaque fois : 80 - 10 = 70.' },
+        { type: 'vf', q: 'Si aujourd\'hui est lundi, demain est mercredi.', correct: false, expl: 'Faux ! Après lundi vient mardi, pas mercredi. Lundi, Mardi, Mercredi, Jeudi...' },
+        { type: 'assoc', q: 'Associe chaque pays à sa capitale !', pairs: [['France', 'Paris'], ['Belgique', 'Bruxelles'], ['Espagne', 'Madrid'], ['Italie', 'Rome']], expl: 'Ce sont les capitales des pays européens !' },
+        { type: 'qcm', q: 'Marie est plus grande que Julie. Julie est plus grande qu\'Emma. Qui est la plus petite ?', opts: ['Marie', 'Julie', 'Emma', 'On ne sait pas'], correct: 'Emma', expl: 'Marie > Julie > Emma. Donc Emma est la plus petite.' },
+        { type: 'qcm', q: 'Un rectangle a ___ côtés égaux deux à deux', opts: ['0', '2', '4', 'tous'], correct: '2', expl: 'Un rectangle a 2 paires de côtés égaux : 2 côtés longs et 2 côtés courts.' },
+        { type: 'vf', q: 'Si lundi est le 1er, mercredi est le 3e', correct: true, expl: 'Oui ! Lundi 1er, mardi 2e, mercredi 3e.' },
+        { type: 'blank', q: '5 amis se partagent 35 bonbons. Chacun en a ___.', answer: ['7'], expl: '35 ÷ 5 = 7. Chaque ami reçoit 7 bonbons.' },
+      ],
+      difficile: [
+        { type: 'qcm', q: 'Un train part à 9h et arrive à 11h30. Combien de temps dure le trajet ?', opts: ['1h', '1h30', '2h', '2h30'], correct: '2h30', expl: 'De 9h à 11h = 2 heures. De 11h à 11h30 = 30 minutes. Total : 2h30.' },
+        { type: 'blank', q: 'J\'ai 5 bonbons. Mon ami en a le double. Nous en avons ___ en tout.', answer: ['15'], expl: 'Mon ami a 5 × 2 = 10 bonbons. Ensemble : 5 + 10 = 15.' },
+        { type: 'qcm', q: 'Intrus : triangle — cercle — carré — rouge', opts: ['triangle', 'cercle', 'carré', 'rouge'], correct: 'rouge', expl: '"Rouge" est l\'intrus : triangle, cercle et carré sont des formes géométriques. Rouge est une couleur.' },
+        { type: 'vf', q: 'Si A > B et B > C, alors A > C.', correct: true, expl: 'Oui ! C\'est une règle logique : si A > B et B > C, alors forcément A > C.' },
+        { type: 'blank', q: 'Paul a 8 ans. Sa sœur a 3 ans de moins. Dans 5 ans, sa sœur aura ___ ans.', answer: ['10'], expl: 'La sœur a 8 - 3 = 5 ans aujourd\'hui. Dans 5 ans : 5 + 5 = 10 ans.' },
+        { type: 'assoc', q: 'Associe chaque heure au bon moment de la journée !', pairs: [['7h', 'matin'], ['12h', 'midi'], ['19h', 'soir'], ['3h', 'nuit']], expl: 'La journée se divise : matin, midi, après-midi, soir, nuit.' },
+        { type: 'vf', q: '9² = 81', correct: true, expl: 'Oui ! 9 × 9 = 81. Le carré d\'un nombre, c\'est le multiplier par lui-même.' },
+        { type: 'blank', q: 'La moitié de 50 est ___', answer: ['25'], expl: '50 ÷ 2 = 25. La moitié, c\'est diviser par 2.' },
+        { type: 'qcm', q: 'Quelle est la moitié de 32 ?', opts: ['14', '15', '16', '17'], correct: '16', expl: '32 ÷ 2 = 16. Tu peux vérifier : 16 + 16 = 32.' },
+      ],
+    }
+  }
+};
+
+// ─── STATE ──────────────────────────────────────────────────────────────────
+const STATE = {
+  xp: 0,
+  unlockedLevels: { maths: { facile: true, moyen: false, difficile: false }, francais: { facile: true, moyen: false, difficile: false }, logique: { facile: true, moyen: false, difficile: false } },
+  levelScores: { maths: { facile: 0, moyen: 0, difficile: 0 }, francais: { facile: 0, moyen: 0, difficile: 0 }, logique: { facile: 0, moyen: 0, difficile: 0 } },
+  levelAttempts: { maths: { facile: 0, moyen: 0, difficile: 0 }, francais: { facile: 0, moyen: 0, difficile: 0 }, logique: { facile: 0, moyen: 0, difficile: 0 } },
+  screen: 'home',
+  category: null,
+  level: null,
+  exercises: [],
+  exIndex: 0,
+  sessionCorrect: 0,
+  sessionTotal: 0,
+  streak: 0,
+  maxStreak: 0,
+  muted: false,
+  timerInterval: null,
+  timerSeconds: 30,
+  assocSelected: null,
+  assocMatched: [],
+};
+
+// ─── LOAD STATE ──────────────────────────────────────────────────────────────
+function loadState() {
+  const saved = STORAGE.get('exercices_state', null);
+  if (saved) {
+    STATE.xp = saved.xp || 0;
+    STATE.unlockedLevels = saved.unlockedLevels || STATE.unlockedLevels;
+    STATE.levelScores = saved.levelScores || STATE.levelScores;
+    STATE.levelAttempts = saved.levelAttempts || STATE.levelAttempts;
+    STATE.maxStreak = saved.maxStreak || 0;
+    STATE.muted = STORAGE.get('sound_muted', false);
+    return true;
+  }
+  return false;
+}
+
+function saveState() {
+  STORAGE.set('exercices_state', { xp: STATE.xp, unlockedLevels: STATE.unlockedLevels, levelScores: STATE.levelScores, levelAttempts: STATE.levelAttempts, maxStreak: STATE.maxStreak });
+  STORAGE.set('sound_muted', STATE.muted);
+}
+
+// ─── SOUND ───────────────────────────────────────────────────────────────────
+let audioCtx = null;
+function initAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+}
+
+function playSound(type) {
+  if (STATE.muted) return;
+  initAudio();
+  const now = audioCtx.currentTime;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  if (type === 'correct') {
+    osc.frequency.value = 880;
+    osc.type = 'sine';
+    gain.gain.setValueAtTime(0.3, now);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+    osc.start(now);
+    osc.stop(now + 0.15);
+  } else if (type === 'wrong') {
+    osc.frequency.value = 220;
+    osc.type = 'sawtooth';
+    gain.gain.setValueAtTime(0.2, now);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+    osc.start(now);
+    osc.stop(now + 0.2);
+  } else if (type === 'complete') {
+    const freqs = [523, 659, 784];
+    const dur = 0.1;
+    freqs.forEach((f, i) => {
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.connect(g);
+      g.connect(audioCtx.destination);
+      o.frequency.value = f;
+      o.type = 'sine';
+      g.gain.setValueAtTime(0.2, now + i*dur);
+      g.gain.exponentialRampToValueAtTime(0.01, now + (i+1)*dur);
+      o.start(now + i*dur);
+      o.stop(now + (i+1)*dur);
+    });
+  }
+}
+
+function toggleSound() {
+  STATE.muted = !STATE.muted;
+  saveState();
+  renderHome();
+}
+
+function toggleSettings() {
+  alert('⚙️ Paramètres:\n\n🔊 Son: ' + (STATE.muted ? 'OFF' : 'ON') + '\n\n💾 Données sauvegardées automatiquement.\n\n🔄 Réinitialiser tout?\nClique sur "Réinitialiser" si tu veux recommencer à zéro.');
+  const reset = confirm('Réinitialiser toutes tes données ? Tu perdras tous tes points et tes niveaux débloqués.');
+  if (reset) {
+    STORAGE.remove('exercices_state');
+    STORAGE.remove('sound_muted');
+    location.reload();
+  }
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+function getCatColor(cat) {
+  return EXERCISES[cat]?.color || '#6C63FF';
+}
+
+function addXP(n) {
+  STATE.xp += n;
+  updateXPBar();
+  saveState();
+}
+
+function updateXPBar() {
+  document.getElementById('xp-display').textContent = `⭐ ${STATE.xp} XP`;
+  const bar = document.getElementById('xp-bar');
+  const pct = Math.min(100, (STATE.xp % 100));
+  bar.style.width = pct + '%';
+}
+
+function confetti() {
+  for (let i = 0; i < 30; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.left = Math.random() * 100 + 'vw';
+    el.style.background = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+    el.style.animationDelay = Math.random() * 0.6 + 's';
+    el.style.width = el.style.height = (8 + Math.random() * 8) + 'px';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 2500);
+  }
+}
+
+function showStreak(n) {
+  if (n < 3) return;
+  const msg = n === 3 ? '🔥 Série de 3 !' : '🔥🔥 Série de 5 ! INCROYABLE !';
+  const banner = document.createElement('div');
+  banner.className = 'streak-banner';
+  banner.textContent = msg;
+  document.body.appendChild(banner);
+  confetti();
+  setTimeout(() => banner.remove(), 2500);
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ─── SCREENS ──────────────────────────────────────────────────────────────────
+function renderHome() {
+  STATE.screen = 'home';
+  const hasSavedProgress = loadState();
+  const app = document.getElementById('app');
+
+  let continueCard = '';
+  if (hasSavedProgress && STATE.xp > 0) {
+    continueCard = `
+      <div class="continue-card pop-in" onclick="continueLast()">
+        <div class="continue-title">📚 Continuer ta progression</div>
+        <div class="continue-sub">Tu as ${STATE.xp} XP accumulés</div>
+      </div>
+    `;
+  }
+
+  app.innerHTML = `
+    <div class="home-title pop-in">Bienvenue ! 🌟</div>
+    <div class="home-sub">Choisis une matière et apprends en t'amusant !</div>
+    ${continueCard}
+    ${Object.entries(EXERCISES).map(([key, cat]) => {
+      const levels = ['facile', 'moyen', 'difficile'];
+      return `
+        <div class="category-card ${key} pop-in" onclick="renderLevelSelect('${key}')">
+          <div class="cat-icon">${cat.icon}</div>
+          <div class="cat-info">
+            <div class="cat-name" style="color:${cat.color}">${cat.label}</div>
+            <div class="cat-desc">Catégorie d'exercices</div>
+            <div class="cat-levels">
+              ${levels.map(l => `
+                <div class="level-badge ${STATE.unlockedLevels[key][l] ? 'unlocked' : 'locked'}">
+                  ${l.charAt(0).toUpperCase() + l.slice(1)}${STATE.unlockedLevels[key][l] ? '' : ' 🔒'}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('')}
+  `;
+
+  updateXPBar();
+}
+
+function continueLast() {
+  renderLevelSelect('maths');
+}
+
+function renderLevelSelect(cat) {
+  STATE.screen = 'levelselect';
+  STATE.category = cat;
+  const catData = EXERCISES[cat];
+  const levels = [
+    { key: 'facile', label: 'Facile', icon: '🌱', desc: 'Pour commencer' },
+    { key: 'moyen', label: 'Moyen', icon: '🌿', desc: 'Ça se corse !' },
+    { key: 'difficile', label: 'Difficile', icon: '🌳', desc: 'Pour les champions !' },
+  ];
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <button onclick="renderHome()" style="background:none;border:none;color:${catData.color};font-size:1.4rem;cursor:pointer;margin-bottom:20px">← Retour</button>
+    <div class="level-select-title pop-in">${catData.icon} ${catData.label}</div>
+    <div class="level-select-sub">Choisis un niveau</div>
+    ${levels.map(lv => {
+      const unlocked = STATE.unlockedLevels[cat][lv.key];
+      const score = STATE.levelScores[cat][lv.key];
+      const attempts = STATE.levelAttempts[cat][lv.key];
+      return `
+        <div class="level-card ${unlocked ? 'unlocked' : 'locked-card'} pop-in"
+          ${unlocked ? `onclick="startLevel('${cat}','${lv.key}')"` : ''}>
+          <div class="level-icon">${lv.icon}</div>
+          <div class="level-info">
+            <div class="level-name" style="color:${catData.color}">${lv.label}</div>
+            <div class="level-score">
+              ${unlocked ? (attempts > 0 ? `Meilleur score : ${score}/6` : lv.desc) : 'Débloque ce niveau en réussissant le précédent !'}
+            </div>
+          </div>
+          ${!unlocked ? '<div class="lock-icon">🔒</div>' : ''}
+        </div>
+      `;
+    }).join('')}
+  `;
+}
+
+function startLevel(cat, level) {
+  STATE.category = cat;
+  STATE.level = level;
+  STATE.exercises = shuffle([...EXERCISES[cat].levels[level]]);
+  STATE.exIndex = 0;
+  STATE.sessionCorrect = 0;
+  STATE.sessionTotal = 0;
+  STATE.streak = 0;
+  renderExercise();
+}
+
+function renderExercise() {
+  STATE.screen = 'exercise';
+  if (STATE.exIndex >= STATE.exercises.length) {
+    renderScoreCard();
+    return;
+  }
+  const ex = STATE.exercises[STATE.exIndex];
+  const cat = STATE.category;
+  const color = getCatColor(cat);
+  const total = STATE.exercises.length;
+  const pct = (STATE.exIndex / total) * 100;
+
+  const typeLabels = {
+    qcm: '🎯 Choix multiple',
+    vf: '✅ Vrai ou Faux',
+    blank: '✏️ Texte à trous',
+    rapide: '⚡ Calcul rapide',
+    assoc: '🔗 Associations',
+  };
+
+  document.getElementById('app').innerHTML = `
+    <div class="ex-header">
+      <span class="ex-progress-text">Question ${STATE.exIndex + 1} / ${total}</span>
+      <span class="ex-progress-text" style="color:${color}">✓ ${STATE.sessionCorrect}</span>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill ${cat}-bar" style="width:${pct}%"></div>
+    </div>
+    <div class="ex-card pop-in">
+      <div class="ex-type-badge" style="background:${color}20;color:${color}">${typeLabels[ex.type] || ex.type}</div>
+      <div class="ex-question">${ex.q}</div>
+      <div id="ex-body">${renderExBody(ex, cat)}</div>
+    </div>
+    <div class="feedback-panel" id="feedback"></div>
+    <button class="next-btn" id="next-btn" onclick="nextExercise()">
+      ${STATE.exIndex + 1 < total ? 'Question suivante →' : 'Voir mon score 🎯'}
+    </button>
+  `;
+
+  if (ex.type === 'rapide') startTimer(ex);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderExBody(ex, cat) {
+  const color = getCatColor(cat);
+  switch (ex.type) {
+    case 'qcm':
+      return `<div class="qcm-options">
+        ${ex.opts.map(o => `<button class="qcm-btn" onclick="checkQCM(this, '${o.replace(/'/g,"\\'")}', '${ex.correct.replace(/'/g,"\\'")}', '${(ex.expl||'').replace(/'/g,"\\'")}')">${o}</button>`).join('')}
+      </div>`;
+    case 'vf':
+      return `<div class="vf-options">
+        <button class="vf-btn vf-vrai" onclick="checkVF(this, true)">✅ Vrai</button>
+        <button class="vf-btn vf-faux" onclick="checkVF(this, false)">❌ Faux</button>
+      </div>`;
+    case 'blank':
+      return `<div class="blank-wrap">
+        <input id="blank-input" class="blank-input" type="text" placeholder="Ta réponse…" autocomplete="off" onkeydown="if(event.key==='Enter')checkBlank()">
+        <button class="submit-btn" style="background:${color}" onclick="checkBlank()">Valider</button>
+      </div>`;
+    case 'rapide':
+      return `
+        <div class="timer-bar-wrap"><div class="timer-bar" id="timer-bar"></div></div>
+        <div class="blank-wrap">
+          <input id="blank-input" class="blank-input" type="text" placeholder="Ta réponse…" autocomplete="off" onkeydown="if(event.key==='Enter')checkBlank()">
+          <button class="submit-btn" style="background:${color}" onclick="checkBlank()">Valider</button>
+        </div>
+      `;
+    case 'assoc':
+      return renderAssoc(ex);
+    default: return '';
+  }
+}
+
+function renderAssoc(ex) {
+  STATE.assocSelected = null;
+  STATE.assocMatched = [];
+  const lefts = ex.pairs.map(p => p[0]);
+  const rights = shuffle(ex.pairs.map(p => p[1]));
+  return `
+    <div class="assoc-grid">
+      <div class="assoc-col" id="assoc-left">
+        ${lefts.map(l => `<div class="assoc-item" data-side="left" data-val="${l}" onclick="assocClick(this)">${l}</div>`).join('')}
+      </div>
+      <div class="assoc-col" id="assoc-right">
+        ${rights.map(r => `<div class="assoc-item" data-side="right" data-val="${r}" onclick="assocClick(this)">${r}</div>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// ─── CHECKING ──────────────────────────────────────────────────────────────────
+function checkQCM(btn, chosen, correct, expl) {
+  document.querySelectorAll('.qcm-btn').forEach(b => b.disabled = true);
+  if (chosen === correct) {
+    btn.classList.add('correct');
+    onCorrect(expl);
+  } else {
+    btn.classList.add('wrong');
+    document.querySelectorAll('.qcm-btn').forEach(b => { if (b.textContent.trim() === correct) b.classList.add('correct'); });
+    onWrong(expl);
+  }
+}
+
+function checkVF(btn, chosen) {
+  const ex = STATE.exercises[STATE.exIndex];
+  document.querySelectorAll('.vf-btn').forEach(b => b.disabled = true);
+  if (chosen === ex.correct) {
+    btn.classList.add('correct');
+    onCorrect(ex.expl || '');
+  } else {
+    btn.classList.add('wrong');
+    document.querySelectorAll('.vf-btn').forEach(b => { if ((b.classList.contains('vf-vrai') && ex.correct) || (b.classList.contains('vf-faux') && !ex.correct)) b.classList.add('correct'); });
+    onWrong(ex.expl || '');
+  }
+}
+
+function checkBlank() {
+  const ex = STATE.exercises[STATE.exIndex];
+  const input = document.getElementById('blank-input');
+  if (!input) return;
+  if (STATE.timerInterval) { clearInterval(STATE.timerInterval); STATE.timerInterval = null; }
+  const val = input.value.trim().toLowerCase();
+  const accepted = (ex.answer || []).map(a => a.toLowerCase());
+  input.disabled = true;
+  document.querySelector('.submit-btn')?.setAttribute('disabled', true);
+  if (accepted.includes(val)) {
+    input.classList.add('correct');
+    onCorrect(ex.expl || '');
+  } else {
+    input.classList.add('wrong');
+    onWrong(ex.expl || `La bonne réponse était : ${ex.answer[0]}`);
+  }
+}
+
+function assocClick(el) {
+  const ex = STATE.exercises[STATE.exIndex];
+  const side = el.dataset.side;
+  const val = el.dataset.val;
+
+  if (el.classList.contains('matched')) return;
+
+  if (!STATE.assocSelected) {
+    document.querySelectorAll('.assoc-item.selected').forEach(e => e.classList.remove('selected'));
+    el.classList.add('selected');
+    STATE.assocSelected = el;
+    return;
+  }
+
+  const prev = STATE.assocSelected;
+  const prevSide = prev.dataset.side;
+
+  if (prevSide === side) {
+    prev.classList.remove('selected');
+    el.classList.add('selected');
+    STATE.assocSelected = el;
+    return;
+  }
+
+  const leftVal = prevSide === 'left' ? prev.dataset.val : val;
+  const rightVal = prevSide === 'right' ? prev.dataset.val : val;
+
+  const correct = ex.pairs.find(p => p[0] === leftVal && p[1] === rightVal);
+
+  if (correct) {
+    prev.classList.remove('selected');
+    prev.classList.add('matched');
+    el.classList.add('matched');
+    STATE.assocMatched.push(leftVal);
+    STATE.assocSelected = null;
+
+    if (STATE.assocMatched.length === ex.pairs.length) {
+      onCorrect(ex.expl || '');
+    }
+  } else {
+    prev.classList.remove('selected');
+    const oldClass = prev.className;
+    prev.className = oldClass.replace('selected', '') + ' wrong';
+    el.className += ' wrong';
+    setTimeout(() => {
+      prev.classList.remove('wrong');
+      el.classList.remove('wrong');
+    }, 600);
+    STATE.assocSelected = null;
+    onWrong(ex.expl || '');
+  }
+}
+
+function onCorrect(expl) {
+  STATE.sessionCorrect++;
+  STATE.sessionTotal++;
+  STATE.streak++;
+  if (STATE.streak > STATE.maxStreak) STATE.maxStreak = STATE.streak;
+  addXP(10);
+  playSound('correct');
+  confetti();
+  if (STATE.streak === 3 || STATE.streak === 5) showStreak(STATE.streak);
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback-panel correct';
+  fb.style.display = 'block';
+  fb.innerHTML = `<span style="font-size:1.3rem">🌟</span> ${BRAVO[Math.floor(Math.random() * BRAVO.length)]}`;
+  document.getElementById('next-btn').style.display = 'block';
+}
+
+function onWrong(expl) {
+  STATE.sessionTotal++;
+  STATE.streak = 0;
+  playSound('wrong');
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback-panel wrong';
+  fb.style.display = 'block';
+  fb.innerHTML = `<span style="font-size:1.3rem">💡</span> ${expl || 'Ce n\'était pas ça, mais tu apprendras !'}`;
+  document.getElementById('next-btn').style.display = 'block';
+}
+
+function nextExercise() {
+  if (STATE.timerInterval) { clearInterval(STATE.timerInterval); STATE.timerInterval = null; }
+  STATE.exIndex++;
+  renderExercise();
+}
+
+function startTimer(ex) {
+  STATE.timerSeconds = 30;
+  const bar = document.getElementById('timer-bar');
+  if (!bar) return;
+  bar.style.width = '100%';
+  bar.style.background = '#38A169';
+
+  STATE.timerInterval = setInterval(() => {
+    STATE.timerSeconds--;
+    if (!document.getElementById('timer-bar')) { clearInterval(STATE.timerInterval); return; }
+    const pct = (STATE.timerSeconds / 30) * 100;
+    bar.style.width = pct + '%';
+    if (STATE.timerSeconds <= 10) bar.style.background = '#E53E3E';
+    else if (STATE.timerSeconds <= 20) bar.style.background = '#ED8936';
+
+    if (STATE.timerSeconds <= 0) {
+      clearInterval(STATE.timerInterval);
+      STATE.timerInterval = null;
+      const input = document.getElementById('blank-input');
+      if (input && !input.disabled) {
+        input.disabled = true;
+        document.querySelector('.submit-btn')?.setAttribute('disabled', true);
+        onWrong(ex.expl || `Temps écoulé ! La réponse était : ${ex.answer}`);
+      }
+    }
+  }, 1000);
+}
+
+function renderScoreCard() {
+  STATE.screen = 'scorecard';
+  if (STATE.timerInterval) { clearInterval(STATE.timerInterval); STATE.timerInterval = null; }
+
+  const cat = STATE.category;
+  const level = STATE.level;
+  const correct = STATE.sessionCorrect;
+  const total = STATE.exercises.length;
+
+  if (correct > STATE.levelScores[cat][level]) {
+    STATE.levelScores[cat][level] = correct;
+  }
+  STATE.levelAttempts[cat][level]++;
+
+  const levels = ['facile', 'moyen', 'difficile'];
+  const levelIndex = levels.indexOf(level);
+  if (correct >= 4 && levelIndex < 2) {
+    STATE.unlockedLevels[cat][levels[levelIndex + 1]] = true;
+  }
+
+  saveState();
+  playSound('complete');
+
+  const stars = correct >= 6 ? '⭐⭐⭐' : correct >= 4 ? '⭐⭐' : '⭐';
+  const emoji = correct >= 5 ? '🏆' : correct >= 3 ? '😊' : '🤔';
+  let msg = correct >= 6 ? 'Score parfait ! Tu es un champion !' :
+            correct >= 4 ? 'Bien joué ! Tu progresses !' :
+            'Continue de t\'entraîner, tu y arriveras !';
+
+  const nextLevelUnlocked = levelIndex < 2 && correct >= 4 && STATE.unlockedLevels[cat][levels[levelIndex + 1]];
+
+  document.getElementById('app').innerHTML = `
+    <div class="score-card pop-in">
+      <div class="score-emoji">${emoji}</div>
+      <div class="score-title">${correct} / ${total} !</div>
+      <div class="score-stars">${stars}</div>
+      <div class="score-sub">${msg}${nextLevelUnlocked ? '<br><br>🎉 Niveau suivant débloqué !' : ''}</div>
+      <div class="score-actions">
+        <button class="score-btn primary" onclick="startLevel('${cat}','${level}')">🔄 Rejouer ce niveau</button>
+        <button class="score-btn secondary" onclick="renderLevelSelect('${cat}')">📋 Choisir un niveau</button>
+        <button class="score-btn secondary" onclick="renderHome()">🏠 Accueil</button>
+      </div>
+    </div>
+  `;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+loadState();
+renderHome();
+</script>
+</body>
+</html>
