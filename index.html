@@ -48,6 +48,7 @@
     box-shadow: 0 2px 10px rgba(0,0,0,0.06); z-index: 99;
   }
   #logo { font-size: 1.2rem; font-weight: 900; color: var(--maths); }
+  #back-btn { background: none; border: none; font-size: 1.4rem; cursor: pointer; display: none; }
   .top-right { display: flex; gap: 12px; align-items: center; }
   #xp-display { font-weight: 800; font-size: 1rem; background: linear-gradient(135deg, #6C63FF, #FF6B9D); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
   .settings-btn { background: none; border: none; font-size: 1.3rem; cursor: pointer; opacity: 0.6; transition: opacity 0.2s; }
@@ -305,6 +306,7 @@
 <div id="xp-bar-wrap"><div id="xp-bar"></div></div>
 
 <div id="top-bar">
+  <button id="back-btn" onclick="goBack()">←</button>
   <div id="logo">✨ Apprends !</div>
   <div class="top-right">
     <div id="xp-display">⭐ 0 XP</div>
@@ -606,8 +608,23 @@ function shuffle(arr) {
 }
 
 // ─── SCREENS ──────────────────────────────────────────────────────────────────
+function setBackBtn(show) {
+  const btn = document.getElementById('back-btn');
+  if (btn) btn.style.display = show ? 'block' : 'none';
+}
+
+function goBack() {
+  if (STATE.timerInterval) { clearInterval(STATE.timerInterval); STATE.timerInterval = null; }
+  if (STATE.screen === 'exercise' || STATE.screen === 'scorecard') {
+    renderLevelSelect(STATE.category);
+  } else if (STATE.screen === 'levelselect') {
+    renderHome();
+  }
+}
+
 function renderHome() {
   STATE.screen = 'home';
+  setBackBtn(false);
   const hasSavedProgress = loadState();
   const app = document.getElementById('app');
 
@@ -632,7 +649,7 @@ function renderHome() {
           <div class="cat-icon">${cat.icon}</div>
           <div class="cat-info">
             <div class="cat-name" style="color:${cat.color}">${cat.label}</div>
-            <div class="cat-desc">Catégorie d'exercices</div>
+            <div class="cat-desc">${getCatDesc(key)}</div>
             <div class="cat-levels">
               ${levels.map(l => `
                 <div class="level-badge ${STATE.unlockedLevels[key][l] ? 'unlocked' : 'locked'}">
@@ -649,6 +666,15 @@ function renderHome() {
   updateXPBar();
 }
 
+function getCatDesc(cat) {
+  const descs = {
+    maths: 'Calcul, suites, multiplications…',
+    francais: 'Orthographe, vocabulaire, grammaire…',
+    logique: 'Suites logiques, associations, raisonnement…',
+  };
+  return descs[cat] || '';
+}
+
 function continueLast() {
   renderLevelSelect('maths');
 }
@@ -656,6 +682,7 @@ function continueLast() {
 function renderLevelSelect(cat) {
   STATE.screen = 'levelselect';
   STATE.category = cat;
+  setBackBtn(true);
   const catData = EXERCISES[cat];
   const levels = [
     { key: 'facile', label: 'Facile', icon: '🌱', desc: 'Pour commencer' },
@@ -664,7 +691,6 @@ function renderLevelSelect(cat) {
   ];
   const app = document.getElementById('app');
   app.innerHTML = `
-    <button onclick="renderHome()" style="background:none;border:none;color:${catData.color};font-size:1.4rem;cursor:pointer;margin-bottom:20px">← Retour</button>
     <div class="level-select-title pop-in">${catData.icon} ${catData.label}</div>
     <div class="level-select-sub">Choisis un niveau</div>
     ${levels.map(lv => {
@@ -701,6 +727,7 @@ function startLevel(cat, level) {
 
 function renderExercise() {
   STATE.screen = 'exercise';
+  setBackBtn(true);
   if (STATE.exIndex >= STATE.exercises.length) {
     renderScoreCard();
     return;
